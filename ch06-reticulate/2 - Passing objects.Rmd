@@ -1,0 +1,123 @@
+---
+title: "2 - Passing objects"
+author: "A bilingual case study"
+---
+
+```{r}
+library(reticulate)
+```
+
+Activate a virtual environment
+
+```{r}
+use_virtualenv("modern_data", required = TRUE)
+
+# Alternatively
+# use_miniconda("~/modern_data", required = TRUE) 
+```
+
+Check active build
+
+```{r}
+py_config()
+```
+
+## Passing simple objects, scalars and vectors
+
+### Py -> R 
+
+Create and display a Python object in Python:
+
+```{python eval = TRUE}
+a = 3.14
+a
+```
+
+Retreive and display a Python object in R:
+
+```{r eval = TRUE}
+py$a
+```
+
+### R -> Py 
+
+Create and deisplay an R object in R:
+
+```{r}
+b <- 42
+b
+```
+
+Retrieve and display an R object in Python
+
+```{python}
+r.b
+```
+
+## Passing data frames
+
+### R -> Py 
+
+An R `data.frame` in R:
+
+```{r}
+# A build-in data frame
+head(PlantGrowth)
+```
+
+An R `data.frame` as a Python `DataFrame`. If you have pandas installed you'll see a `pandas.DataFrame` here. If not you'll get a `dict`
+
+```{python}
+r.PlantGrowth.head()
+```
+
+### Py -> R 
+
+A Python `DataFrame` as an R `data.frame`
+
+```{python}
+import seaborn as sns
+
+iris_df = sns.load_dataset('iris')
+iris_df.head()
+```
+
+```{r}
+# A build-in data frame
+head(py$iris_df)
+```
+
+## Passing arrays
+
+### Py -> R 
+
+A Python NumPy `ndarray` in Python:
+
+```{python eval = TRUE}
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+iris.data[:6]
+```
+
+A Python NumPy `ndarray` as an R `matrix`:
+
+```{r eval = TRUE}
+head(py$iris$data)
+```
+
+### R -> Py 
+
+An R `matrix` in R:
+
+```{r}
+iris_data <- as.matrix(iris[-5])
+head(iris_data)
+```
+
+An R `matrix` as a NumPy `ndarray`:
+
+```{python}
+r.iris_data[:6]
+```
+

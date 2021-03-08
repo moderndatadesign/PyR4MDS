@@ -1,0 +1,63 @@
+---
+title: "3 - Using functions"
+author: "A bilingual case study"
+---
+
+```{r}
+library(reticulate)
+```
+
+Activate a virtual environment
+
+```{r}
+use_virtualenv("modern_data", required = TRUE)
+
+# Alternatively
+# use_miniconda("~/modern_data", required = TRUE) 
+```
+
+Check active build
+
+```{r}
+py_config()
+```
+
+We have previously installed `scikit-learn` in the `modern_data` virtualenv. Let's look at a hello world example.
+
+First, import python package modules:
+
+```{python}
+from sklearn import datasets
+from sklearn.svm import SVC
+```
+
+load the data:
+
+```{python}
+iris = datasets.load_iris()
+iris.data[:6]
+```
+
+## Hello, SVC
+
+Create an instance of the SVC, _Support Vector Classification_, class.
+
+
+```{python}
+clf = SVC()
+```
+
+Call the fit and predict methods on the target, using target names
+
+```{python}
+clf.fit(iris.data, iris.target_names[iris.target])
+clf.predict(iris.data[:3])
+```
+
+## Accessing python functions
+
+Note: This is completely meaningless since were predicting the exact same data we used to train the model. It's just an example of how to get things working, no a complete ML case study.
+
+```{r}
+py$clf$predict(r_to_py(iris[-5]))
+```

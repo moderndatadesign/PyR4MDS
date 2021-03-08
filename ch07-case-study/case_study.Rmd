@@ -1,0 +1,133 @@
+---
+title: "Case Study"
+subtitle: "A bilingual case study"
+author: "Python & R for the Modern Data Scientist "
+runtime: shiny
+---
+
+Click through the tabs to explore our results
+
+## {.tabset}
+
+### Setup
+
+```{r setup, include = FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(RSQLite) # SQLite
+library(DBI) # R Database Interface
+
+# Activate virtual environment
+library(reticulate)
+use_virtualenv("modern_data", required = TRUE)
+```
+
+The Python build:
+
+```{r eval = TRUE}
+py_config()
+```
+
+```{r eval = TRUE}
+# Create an ephemeral in-memory RSQLite database
+con <- dbConnect(SQLite(), "./data/FPA_FOD_20170508.sqlite")
+
+fires <- dbGetQuery(con, "
+                        SELECT
+                        STAT_CAUSE_DESCR, OWNER_CODE, DISCOVERY_DOY, FIRE_SIZE, LATITUDE, LONGITUDE
+                        FROM Fires  
+                        WHERE (FIRE_YEAR=2015 AND STATE != 'AK' AND STATE != 'HI' AND STATE != 'PR');")
+dbDisconnect(con)
+# The data set has `r nrow(fires)` observations.
+```
+
+```{python eval = TRUE}
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+```
+
+### Data
+
+An interactive table of our data
+
+```{r}
+DT::datatable(fires[sample(1:nrow(fires), 600),])
+```
+
+### Model
+
+```{r echo = TRUE}
+source_python("ml.py")
+```
+
+```{python eval = FALSE}
+# Alternatively, 
+# To run in an RMarkdown code chunk.
+features = ["OWNER_CODE", "DISCOVERY_DOY", "FIRE_SIZE", "LATITUDE", "LONGITUDE"]
+X = r.fires[features]
+y = r.fires["STAT_CAUSE_DESCR"]
+
+le = LabelEncoder()
+y = le.fit_transform(y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42, stratify=y)
+
+clf = RandomForestClassifier()
+clf.fit(X_train, y_train)
+
+preds = clf.predict(X_test)
+conmat = metrics.confusion_matrix(y_test, preds)
+acc = metrics.accuracy_score(y_test, preds)
+```
+
+### Results
+
+The accuracy is `r acc`.
+
+```{r}
+conmat %>% 
+  as.data.frame.table(responseName = "value") %>% 
+  ggplot(aes(Var1, Var2, size = value)) +
+  geom_point(shape = 1) +
+  scale_size(range = c(0,20)) +
+  labs(title = "Confusion matrix",
+      x = "True values",
+      y = "Predicted values") +
+  theme_minimal()
+```
+
+### Prediction
+
+Sliders for prediction:
+
+```{r}
+sliderInput("OWNER_CODE", "Owner code:", 
+            min = 1, max = 15, value = 1)
+sliderInput("DISCOVERY_DOY", "Day of the year:", 
+            min = 1, max = 365, value = 36)
+sliderInput("FIRE_SIZE", "Number of bins (log10):", 
+            min = -4, max = 6, value = 1)
+sliderInput("LATITUDE", "latitude:", 
+            min = 24.670637, max = 48.9992, value = 30)
+sliderInput("LONGITUDE", "Longitude:", 
+            min = -124.6615, max = -65.321389, value = -100)
+```
+
+```{r}
+prediction <- renderText({
+  input_df <- data.frame(OWNER_CODE = input$OWNER_CODE,
+                         DISCOVERY_DOY = input$DISCOVERY_DOY,
+                         FIRE_SIZE = input$FIRE_SIZE,
+                         LATITUDE = input$LATITUDE,
+                         LONGITUDE = input$LONGITUDE)
+  
+  clf$predict(r_to_py(input_df))
+})
+```
+
+The fire cause code is `r prediction`.
+
+## {-}

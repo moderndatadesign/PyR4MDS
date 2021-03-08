@@ -1,0 +1,41 @@
+---
+title: "4 - Calling scripts"
+author: "A bilingual case study"
+---
+
+```{r}
+library(reticulate)
+```
+
+Activate a virtual environment
+
+```{r}
+use_virtualenv("modern_data", required = TRUE)
+
+# Alternatively
+# use_miniconda("~/modern_data", required = TRUE) 
+```
+
+Check active build
+
+```{r}
+py_config()
+```
+
+We have previously installed `scikit-learn` in the `modern_data` virtualenv. Let's look at a hello world example.
+
+In contrast to the `3 - Using funcitons.Rmd` this time we'll just call all the Python commands by sourcing a script. 
+
+```{r}
+source_python("SVC_iris.py")
+```
+
+## Accessing python functions
+
+Note: This is completely meaningless since were predicting the exact same data we used to train the model. It's just an exmaple of how to get things working, no a complete ML case study.
+
+Importantly, Python functions and objects are available directly in the R environment, not via the `py` object. Thus, it is crucial to be aware of naming conflicts.
+
+```{r}
+clf$predict(r_to_py(iris[-5]))
+```

@@ -1,0 +1,84 @@
+---
+title: "Workflow Context"
+output: html_document
+---
+
+# Workflow
+
+## Exploratory Data Analysis (EDA)
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+data(starwars)
+```
+
+```{r}
+ggplot(starwars, aes(hair_color)) +
+ geom_bar()
+```
+```{r}
+starwars <- filter(starwars, name != "Jabba Desilijic Tiure")
+ggplot(starwars, aes(x = height, y = mass, fill = gender)) +
+ geom_point(shape = 21, size = 5) +
+ theme_light() +
+ geom_smooth(method = "lm") +
+ labs(x = "Height (cm)", y = "Weight (cm)",
+ title = "StarWars profiles ",
+ subtitle = "Mass vs Height Comparison",
+ caption = "Source: The Star Wars API")
+```
+
+```{r}
+library(leaflet)
+
+shared_cars_data <- read.csv("data/2020_02_25.csv")
+
+leaflet(data = shared_cars_data[1:20, ]) %>%
+ addTiles() %>%
+ addMarkers(~longitude, ~latitude)
+```
+
+## Interactive Reporting
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+         titlePanel("StarWars Characters"),
+         sidebarLayout(
+           sidebarPanel(
+             numericInput("height", "Minimum Height:", 0, min = 1, max = 1000),
+             numericInput("weight", "Minimum Weight:", 0, min = 1, max = 1000),
+             hr(),
+             helpText("Data from `dplyr` package.")
+             ),
+             mainPanel(
+             plotOutput("distPlot")
+         )
+       )
+)
+```
+
+```{r}
+server <- function(input, output) {
+     output$distPlot <- renderPlot({
+     starwars_filtered <- starwars %>%
+     filter(height > input$height & mass > input$weight)
+     ggplot(starwars_filtered, aes(x = height, y = mass, fill = gender)) +
+     geom_point(pch = 21, size = 5) +
+     theme_light() +
+     geom_smooth(method = "lm") +
+     labs(x = "Height", y = "Mass",
+     title = "StarWars Characters Mass vs Height Comparison",
+     subtitle = "Each dot represents a separate character",
+     caption = "Data Source: starwars (dplyr)")
+     })
+}
+```
+
+```{r}
+shinyApp(ui = ui, server = server)
+```
+

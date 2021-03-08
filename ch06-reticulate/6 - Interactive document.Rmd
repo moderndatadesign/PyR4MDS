@@ -1,0 +1,76 @@
+---
+title: "Python & R for the Modern Data Scientist"
+subtitle: "A bilingual case study"
+runtime: shiny
+---
+
+Click through the tabs to explore our results and input your own values to make a prediction.
+
+## {.tabset}
+
+### Setup
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(reticulate)
+library(tidyverse)
+use_virtualenv("modern_data", required = TRUE)
+py_config()
+```
+
+### Data
+
+```{r eval = TRUE}
+DT::datatable(iris)
+```
+
+### Model
+
+```{python}
+from sklearn import datasets
+from sklearn.svm import SVC
+iris = datasets.load_iris()
+
+clf = SVC()
+clf.fit(iris.data, iris.target_names[iris.target])
+```
+
+### Prediction
+
+```{r}
+# Slider for Sepal length:
+sliderInput("sl", label = "Sepal length:", 
+            min = 4.3, max = 7.9, value = 4.5, step = 0.1)
+
+# Slider for Sepal width:
+sliderInput("sw", label = "Sepal width:", 
+            min = 2.0, max = 4.4, value = 3.0, step = 0.1)
+
+# Slider for Petal length:
+sliderInput("pl", label = "Sepal length:", 
+            min = 1.0, max = 6.9, value = 5.6, step = 0.1)
+
+# Slider for Petal width:
+sliderInput("pw", label = "Petal width:", 
+            min = 0.1, max = 2.5, value = 1.8, step = 0.1)
+
+```
+
+```{r}
+prediction <- renderText({
+  py$clf$predict(
+    r_to_py(
+      data.frame(
+        sl = input$sl,
+        sw = input$sw,
+        pl = input$pl,
+        pw = input$pw)
+    )
+  )
+})
+```
+
+The prediction is `r prediction`.
+
+## {-}

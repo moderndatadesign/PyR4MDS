@@ -1,0 +1,59 @@
+---
+title: "Case Study"
+subtitle: "A bilingual case study"
+author: "Python & R for the Modern Data Scientist "
+runtime: shiny
+---
+
+Click through the tabs to explore our results
+
+## {.tabset}
+
+### Setup
+
+```{r setup, include = FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(RSQLite) # SQLite
+library(DBI) # R Database Interface
+
+# Activate virtual environment
+library(reticulate)
+use_virtualenv("modern_data", required = TRUE)
+```
+
+The Python build:
+
+```{r eval = TRUE}
+py_config()
+```
+
+```{r eval = TRUE}
+# Create an ephemeral in-memory RSQLite database
+con <- dbConnect(SQLite(), "./data/FPA_FOD_20170508.sqlite")
+
+fires <- dbGetQuery(con, "
+                        SELECT
+                        STAT_CAUSE_DESCR, OWNER_CODE, DISCOVERY_DOY, FIRE_SIZE, LATITUDE, LONGITUDE
+                        FROM Fires  
+                        WHERE (FIRE_YEAR=2015 AND STATE != 'AK' AND STATE != 'HI' AND STATE != 'PR');")
+dbDisconnect(con)
+# The data set has `r nrow(fires)` observations.
+```
+
+
+
+```{r}
+library(leaflet)
+
+df <- fires %>% sample_n(10000)
+
+leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng = df$LONGITUDE, lat = df$LATITUDE,
+  clusterOptions = markerClusterOptions()
+)
+```
+

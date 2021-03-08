@@ -1,0 +1,74 @@
+---
+title: "Data Format"
+output: html_document
+---
+
+# Data format
+
+## Time series
+
+```{r}
+ts_data_raw <- read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+```
+
+
+```{r}
+df_ts <- ts(ts_data_raw$Temp, start = c(1981, 01, 01), end = c(1990, 12, 31), frequency = 365)
+class(df_ts)
+```
+
+```{r}
+plot(df_ts)
+```
+
+```{r}
+decomposed_ts <- decompose(df_ts)
+plot(decomposed_ts)
+```
+
+## Raster
+
+```{r}
+library(raster)
+climate_variables <- getData(name = "worldclim", var = "bio", res = 10)
+```
+```{r}
+library(sdmbench)
+
+benchmarking_data <- get_benchmarking_data("Loxodonta africana")
+```
+
+```{r}
+data("wrld_simpl", package = "maptools")
+benchmarking_data$df_data <- partition_data(dataset_raster = benchmarking_data$raster_data,
+                                            dataset = benchmarking_data$df_data,
+                                            env = benchmarking_data$raster_data$climate_variables,
+                                            method = "block")
+
+learners <- list(mlr::makeLearner("classif.randomForest", predict.type = "prob"),
+                 mlr::makeLearner("classif.logreg", predict.type = "prob"),
+                 mlr::makeLearner("classif.rpart", predict.type = "prob"),
+                 mlr::makeLearner("classif.ksvm", predict.type = "prob"))
+benchmarking_data$df_data <- na.omit(benchmarking_data$df_data)
+```
+
+```{r}
+bmr <- benchmark_sdm(benchmarking_data$df_data, 
+                     learners = learners, 
+                     dataset_type = "block", 
+                     sample = FALSE)
+best_results <- get_best_model_results(bmr)
+```
+
+```{r}
+bmr_models <- mlr::getBMRModels(bmr)
+plot_sdm_map(raster_data = benchmarking_data$raster_data,
+            bmr_models = bmr_models,
+            model_id = best_results$learner.id[1],
+            model_iteration = best_results$iter[1],
+             map_type = "static") +
+            raster::plot(wrld_simpl, 
+                         add = TRUE, 
+                         border = "darkgrey")
+```
+
