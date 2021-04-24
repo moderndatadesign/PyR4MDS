@@ -1,7 +1,7 @@
 ---
 title: "Case Study"
 subtitle: "A bilingual case study"
-author: "Python & R for the Modern Data Scientist "
+author: "Python & R for the Modern Data Scientist"
 runtime: shiny
 ---
 
@@ -16,8 +16,8 @@ Click through the tabs to explore our results
 knitr::opts_chunk$set(echo = FALSE)
 
 library(tidyverse)
-library(RSQLite) # SQLite
-library(DBI) # R Database Interface
+library(RSQLite)
+library(DBI)
 
 # Activate virtual environment
 library(reticulate)
@@ -110,7 +110,7 @@ sliderInput("DISCOVERY_DOY", "Day of the year:",
             min = 1, max = 365, value = 36)
 sliderInput("FIRE_SIZE", "Number of bins (log10):", 
             min = -4, max = 6, value = 1)
-sliderInput("LATITUDE", "latitude:", 
+sliderInput("LATITUDE", "Latitude:", 
             min = 24.670637, max = 48.9992, value = 30)
 sliderInput("LONGITUDE", "Longitude:", 
             min = -124.6615, max = -65.321389, value = -100)

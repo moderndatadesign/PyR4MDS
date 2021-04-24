@@ -1,0 +1,68 @@
+---
+title: "Case study plots"
+author: "Python & R for the Modern Data Scientist"
+---
+
+```{r}
+library(tidyverse)
+library(RSQLite)
+library(DBI)
+
+# Activate virtual environment
+library(reticulate)
+use_virtualenv("modern_data", required = TRUE)
+```
+
+
+```{r}
+con <- dbConnect(SQLite(), "./data/FPA_FOD_20170508.sqlite")
+
+fires <- dbGetQuery(con, "
+                        SELECT
+                        STAT_CAUSE_DESCR, OWNER_CODE, DISCOVERY_DOY, FIRE_SIZE, LATITUDE, LONGITUDE
+                        FROM Fires  
+                        WHERE (FIRE_YEAR=2015 AND STATE != 'AK' AND STATE != 'HI' AND STATE != 'PR');")
+dbDisconnect(con)
+```
+
+```{r}
+df <- fires %>% sample_n(10000)
+```
+
+```{r}
+glimpse(fires)
+```
+
+```{r}
+library(ggplot2)
+g <- ggplot(fires, aes(x = LONGITUDE,
+                  y = LATITUDE,
+                  size = FIRE_SIZE,
+                  color = factor(OWNER_CODE))) +
+  geom_point(alpha = 0.15, shape = 16) +
+  scale_size(range = c(0.5, 10)) +
+  theme_classic() +
+  theme(legend.position = "bottom",
+        panel.background = element_rect(fill = "grey10"))
+
+g
+```
+
+```{r}
+g +
+  facet_wrap(facets = vars(STAT_CAUSE_DESCR), nrow = 4)
+```
+
+```{r}
+library(GGally)
+fires %>%
+  ggpairs()
+```
+
+```{r}
+ggplot(fires, aes(FIRE_SIZE)) +
+  geom_density() +
+  scale_x_log10()
+```
+
+
