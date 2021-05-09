@@ -2,7 +2,7 @@
 
 ## Welcome
 
-Welcome to the official companion code repository for the O'Reilly "Python and R for the Modern Data Scientist" book.
+Welcome to the companion code repository for the O'Reilly book [Python and R for the Modern Data Scientist](https://learning.oreilly.com/library/view/python-and-r/9781492093398/). You can also access this repository as an [RStudio Cloud](https://rstudio.cloud/project/2534578) project (account required). 
 
 ![](book_cover.png)
 
