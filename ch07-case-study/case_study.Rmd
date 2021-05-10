@@ -1,7 +1,6 @@
 ---
-title: "Case Study"
-subtitle: "A bilingual case study"
-author: "Python & R for the Modern Data Scientist"
+title: "R & Python Case Study"
+author: "Python & R for the modern data scientist"
 runtime: shiny
 ---
 
