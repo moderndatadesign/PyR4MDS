@@ -34,6 +34,11 @@ Part IV. Levels of working together II: Synergy
 * [ch06-reticulate: Using the two languages synergistically](ch06)
 * [ch07-case-study: Case study](ch07)
 
+Appendix A. Bilingual Dictionary
+
+*  Available [here](http://www.ylz.ncx.mybluehost.me/moderndata.design/PyR4MDS/).
+
+
 ## Datasets
 
 Datasets used in the book can be found as follows.
