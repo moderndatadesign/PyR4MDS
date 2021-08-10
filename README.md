@@ -2,9 +2,9 @@
 
 ## Welcome
 
-Welcome to the companion code repository for the O'Reilly book [Python and R for the Modern Data Scientist](https://learning.oreilly.com/library/view/python-and-r/9781492093398/). You can also access this repository as an [RStudio Cloud](https://rstudio.cloud/project/2534578) project (account required). 
+Welcome to the companion code repository for the O'Reilly book [Python and R for the Modern Data Scientist](https://learning.oreilly.com/library/view/python-and-r/9781492093398/). You can also access this repository as an [RStudio Cloud](https://rstudio.cloud/project/2534578) project (account required).
 
-![](book_cover.png)
+![](book_cover.jpeg)
 
 Success in data science depends on the flexible and appropriate use of tools. That includes Python and R, two of the foundational programming languages in the field. With this book, data scientists from the Python and R communities will learn how to speak the dialects of each language. By recognizing the strengths of working with both, you'll discover new ways to accomplish data science tasks and expand your skill set.
 
@@ -19,7 +19,7 @@ Authors [Rick J Scavetta](https://www.linkedin.com/in/rick-scavetta/) and [Boyan
 
 ## Repository structure
 
-When available, companion scripts to the book are found in their respective chapter directories. 
+When available, companion scripts to the book are found in their respective chapter directories.
 
 Part II. Levels of working together I: Bilingual
 * [ch02-r-py: R for Pythonistas](ch02)
@@ -84,7 +84,7 @@ The daily australian temperatures dataset can be dowloaded directly from [Github
 
 ### Loxodonta Africana species occurence data
 
-Obtain this data and the spatial raster (the bioclimactic varialbes) using the R `sdmbench` package: 
+Obtain this data and the spatial raster (the bioclimactic varialbes) using the R `sdmbench` package:
 
 ```r
 library(sdmbench)
