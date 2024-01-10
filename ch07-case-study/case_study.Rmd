@@ -123,7 +123,7 @@ prediction <- renderText({
                          LATITUDE = input$LATITUDE,
                          LONGITUDE = input$LONGITUDE)
   
-  clf$predict(r_to_py(input_df))
+  py$clf$predict(r_to_py(input_df))
 })
 ```
 
